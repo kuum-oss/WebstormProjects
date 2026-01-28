@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Аниме Онлайн</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #fff;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .anime-info {
+      display: flex;
+    }
+    .anime-info img {
+      width: 200px;
+      border-radius: 10px;
+      margin-right: 20px;
+    }
+    .anime-details {
+      flex: 1;
+    }
+    .video-player {
+      margin-top: 20px;
+    }
+    .video-player h2 {
+      text-align: center;
+    }
+    .episodes {
+      margin-top: 20px;
+    }
+    .episodes a {
+      display: block;
+      padding: 5px;
+      background: #333;
+      color: #fff;
+      text-decoration: none;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .episodes a:hover {
+      background: #444;
+    }
+    .admin-login, .admin-panel {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .admin-panel {
+      display: none;
+    }
+    .admin-panel div {
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      width: 60%;
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+  </style>
+  <script>
+    // Простейшая функция хэширования строки (не криптографически надёжная)
+    function simpleHash(str) {
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0; // Приводим к 32-битному целому
+      }
+      return hash;
+    }
+
+    // Ожидаемый хэш пароля "1111"
+    const expectedHash = 1508416; // simpleHash("1111")
+
+    // Функция для смены эпизода (принимает название и URL видео)
+    function changeEpisode(episode, videoUrl) {
+      document.getElementById("episode-title").innerText = episode;
+      document.getElementById("video-frame").src = videoUrl;
+    }
+
+    // Загрузка локального видео
+    function loadLocalVideo(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const videoURL = URL.createObjectURL(file);
+        document.getElementById("episode-title").innerText = file.name;
+        document.getElementById("video-frame").src = videoURL;
+      }
+    }
+
+    // Установка YouTube ссылки (ожидается, что это ссылка для встраивания)
+    function setYouTubeLink() {
+      const ytLink = document.getElementById("youtube-link-input").value;
+      if (ytLink) {
+        document.getElementById("episode-title").innerText = "YouTube Video";
+        document.getElementById("video-frame").src = ytLink;
+      }
+    }
+
+    // Вход для администратора с проверкой пароля
+    function adminLogin() {
+      const password = prompt("Введите пароль администратора:");
+      if (simpleHash(password) === expectedHash) {
+        document.getElementById("admin-panel").style.display = "block";
+      } else {
+        alert("Неверный пароль!");
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="container">
+  <h1>Demon Slayer: Kimetsu no Yaiba</h1>
+  <div class="anime-info">
+    <img src="demon_slayer_poster.jpg" alt="Постер аниме Demon Slayer">
+    <div class="anime-details">
+      <p><strong>Жанры:</strong> Экшен, Приключения, Фэнтези</p>
+      <p><strong>Год:</strong> 2019</p>
+      <p><strong>Студия:</strong> Ufotable</p>
+      <p>Описание: История о юном Тандзиро, который отправляется в опасное путешествие, чтобы спасти свою сестру и отомстить демонам.</p>
+    </div>
+  </div>
+
+  <div class="video-player">
+    <h2 id="episode-title">Эпизод 1</h2>
+    <video id="video-frame" width="100%" height="400px" controls>
+      <source src="" type="video/mp4">
+      Ваш браузер не поддерживает видео.
+    </video>
+  </div>
+
+  <div class="episodes">
+    <h2>Список серий</h2>
+    <a href="#" onclick="changeEpisode('Эпизод 1', 'https://www.youtube.com/watch?v=mTEhEJNeDzs&t=202s')">Эпизод 1</a>
+    <a href="#" onclick="changeEpisode('Эпизод 2', 'https://www.youtube.com/embed/example2')">Эпизод 2</a>
+    <a href="#" onclick="changeEpisode('Эпизод 3', 'https://www.youtube.com/embed/example3')">Эпизод 3</a>
+    <a href="#" onclick="changeEpisode('Эпизод 4', 'https://www.youtube.com/embed/example4')">Эпизод 4</a>
+  </div>
+
+  <div class="admin-login">
+    <button onclick="adminLogin()">Вход для администратора</button>
+  </div>
+
+  <div id="admin-panel" class="admin-panel">
+    <div class="file-upload">
+      <h2>Загрузить локальное видео</h2>
+      <input type="file" accept="video/mp4" onchange="loadLocalVideo(event)">
+    </div>
+    <div class="youtube-upload">
+      <h2>Вставить ссылку на YouTube видео</h2>
+      <input type="text" id="youtube-link-input" placeholder="Вставьте ссылку для встраивания с YouTube">
+      <button onclick="setYouTubeLink()">Установить</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

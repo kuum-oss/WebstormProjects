@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiohead - Creep</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .player-wrapper {
+            display: flex;
+            gap: 40px;
+            width: 90%;
+            max-width: 900px;
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .left-column {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover-image {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        h1 { margin: 10px 0 5px; font-size: 26px; }
+        h2 { margin: 0 0 20px; font-size: 18px; color: #b3b3b3; font-weight: normal; }
+
+        audio { width: 100%; margin-bottom: 20px; outline: none; }
+
+        .info-box {
+            text-align: left;
+            width: 100%;
+            font-size: 14px;
+            color: #888;
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        ul { padding-left: 20px; margin: 0; }
+        li { margin-bottom: 5px; }
+
+        .lyrics-column {
+            width: 60%;
+            height: 500px;
+            overflow-y: auto;
+            position: relative;
+            /* Маска для плавного исчезновения текста сверху и снизу */
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            padding-right: 60px;
+        }
+
+        .line {
+            font-size: 24px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.3); /* Неактивный текст - прозрачный */
+            margin: 20px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+            line-height: 1.4;
+
+            /* ИСПРАВЛЕНИЕ: Текст теперь растет вправо, а не влево */
+            transform-origin: left center;
+        }
+
+        .line:hover { color: rgba(255, 255, 255, 0.6); }
+
+        .line.active {
+            color: #ffffff; /* Активный текст - белый */
+            transform: scale(1.05); /* Немного увеличивается */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+        @media (max-width: 700px) {
+            .player-wrapper { flex-direction: column; }
+            .left-column, .lyrics-column { width: 100%; }
+            .lyrics-column { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="player-wrapper">
+    <div class="left-column">
+        <img src="https://sefon.pro/img/artist_photos/radiohead.jpg" alt="Album Art" class="cover-image">
+
+        <h1>Creep</h1>
+        <h2>Radiohead</h2>
+
+        <audio id="audio" controls>
+            <source src="creep.mp3" type="audio/mpeg">
+
+        </audio>
+
+        <div class="info-box">
+            <strong>Информация:</strong>
+            <ul>
+                <li>Альбом: Pablo Honey (1993)</li>
+                <li>Жанр: Alternative Rock</li>
+                <li>Лейбл: Parlophone</li>
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="lyrics-column" id="lyrics">
+        <div class="line" data-time="0">... (Музыка) ...</div>
+        <div class="line" data-time="18">When you were here before</div>
+        <div class="line" data-time="23">Couldn't look you in the eye</div>
+        <div class="line" data-time="29">You're just like an angel</div>
+        <div class="line" data-time="34">Your skin makes me cry</div>
+        <div class="line" data-time="38">You float like a feather</div>
+        <div class="line" data-time="45">In a beautiful world</div>
+        <div class="line" data-time="50">I wish I was special</div>
+        <div class="line" data-time="55">You're so fuckin' special</div>
+        <div class="line" data-time="57">... (Музыка) ...</div>
+
+        <div class="line" data-time="59">But I'm a creep</div>
+        <div class="line" data-time="65">I'm a weirdo</div>
+        <div class="line" data-time="70">What the hell am I doin' here?</div>
+        <div class="line" data-time="74">I don't belong here</div>
+
+        <div class="line" data-time="78">I don't care if it hurts</div>
+        <div class="line" data-time="85">I wanna have control</div>
+        <div class="line" data-time="92">I want a perfect body</div>
+        <div class="line" data-time="95">I want a perfect soul</div>
+        <div class="line" data-time="105">I want you to notice</div>
+        <div class="line" data-time="110">When I'm not around</div>
+
+        <div class="line" data-time="116">You're so fuckin' special</div>
+        <div class="line" data-time="119">I wish I was special</div>
+
+        <div class="line" data-time="124">But I'm a creep...</div>
+        <div class="line" data-time="130">I'm a weirdo...</div>
+        <div class="line" data-time="139">What the hell am I doin' here?</div>
+        <div class="line" data-time="144">I don't belong here...</div>
+        <div class="line" data-time="148">Delux version...</div>
+    </div>
+</div>
+
+<script>
+    const audio = document.getElementById('audio');
+    const lines = document.querySelectorAll('.line');
+
+    // Логика синхронизации
+    audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+
+        lines.forEach((line, index) => {
+            // Берем время текущей строки
+            const time = parseFloat(line.getAttribute('data-time'));
+            // Берем время следующей строки (если она есть)
+            const nextTime = lines[index + 1] ? parseFloat(lines[index + 1].getAttribute('data-time')) : Infinity;
+
+            // Если время песни попало в этот промежуток
+            if (currentTime >= time && currentTime < nextTime) {
+                const activeLine = document.querySelector('.line.active');
+                if (activeLine !== line) {
+                    activeLine?.classList.remove('active');
+                    line.classList.add('active');
+                    // Плавная прокрутка к активной строке
+                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    });
+
+    // Клик по строке перематывает песню
+    lines.forEach(line => {
+        line.addEventListener('click', () => {
+            audio.currentTime = parseFloat(line.getAttribute('data-time'));
+            audio.play();
+        });
+    });
+</script>
+</body>
+</html>

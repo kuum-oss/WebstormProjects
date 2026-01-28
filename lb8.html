@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Max Calculator & Chart</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/6663/6663866.png">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* min-height щоб влазило на маленькі екрани */
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator-card {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+            text-align: center;
+            width: 400px;
+            border: 2px solid #333;
+        }
+        h1 { color: #ff4500; text-transform: uppercase; font-size: 22px; margin-bottom: 10px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 5px; color: #bbbbbb; font-size: 14px; }
+        input {
+            width: 100%; padding: 10px; background-color: #2d2d2d;
+            border: 1px solid #444; color: white; border-radius: 5px;
+            box-sizing: border-box; font-size: 16px;
+        }
+        input:focus { outline: none; border-color: #ff4500; }
+        button {
+            background-color: #ff4500; color: white; border: none;
+            padding: 12px 20px; font-size: 16px; font-weight: bold;
+            border-radius: 5px; cursor: pointer; width: 100%;
+            margin-top: 10px; transition: background 0.3s;
+        }
+        button:hover { background-color: #e03e00; }
+
+        #result-box {
+            margin-top: 25px;
+            display: none; /* Приховано до натискання */
+        }
+        .main-result {
+            font-size: 36px; font-weight: bold; color: #ff4500;
+            display: block; margin-bottom: 20px;
+        }
+
+        /* --- СТИЛІ ДЛЯ ДІАГРАМИ (Chart) --- */
+        .chart-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 150px;
+            border-bottom: 2px solid #555;
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+        .bar {
+            width: 18%;
+            background-color: #ff4500;
+            border-radius: 5px 5px 0 0;
+            transition: height 1s ease-out; /* Анімація росту стовпчиків */
+            height: 0; /* Спочатку висота 0 */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 12px;
+            color: #888;
+        }
+        .bar-value {
+            margin-bottom: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #1e1e1e; /* Темний текст на помаранчевому фоні */
+            transform: rotate(-90deg); /* Повертаємо текст вертикально */
+        }
+        /* Різні кольори для зон інтенсивності */
+        .bar-95 { background-color: #ff4500; opacity: 1; }
+        .bar-85 { background-color: #ff652f; opacity: 0.9; }
+        .bar-75 { background-color: #ff855e; opacity: 0.8; }
+        .bar-65 { background-color: #ffa58c; opacity: 0.7; }
+
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <img src="https://cdn-icons-png.flaticon.com/512/9839/9839839.png" alt="Gym Icon" style="width: 50px;">
+    <h1>Калькулятор + Графік</h1>
+
+    <div class="input-group">
+        <label>Робоча вага (кг):</label>
+        <input type="number" id="weight" placeholder="Вага">
+    </div>
+    <div class="input-group">
+        <label>Повторення:</label>
+        <input type="number" id="reps" placeholder="Кількість">
+    </div>
+
+    <button onclick="calculateAndDraw()">Розрахувати та побудувати</button>
+
+    <div id="result-box">
+        <span style="color: #bbb;">Ваш максимум (1RM):</span>
+        <span id="result-value" class="main-result">0 кг</span>
+
+        <p style="text-align: left; font-size: 14px; margin-bottom: 5px;">Тренувальні зони:</p>
+        <div class="chart-container">
+            <div class="bar bar-65" id="bar-65"><span class="bar-value" id="val-65"></span><span class="bar-label">65%</span></div>
+            <div class="bar bar-75" id="bar-75"><span class="bar-value" id="val-75"></span><span class="bar-label">75%</span></div>
+            <div class="bar bar-85" id="bar-85"><span class="bar-value" id="val-85"></span><span class="bar-label">85%</span></div>
+            <div class="bar bar-95" id="bar-95"><span class="bar-value" id="val-95"></span><span class="bar-label">95%</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateAndDraw() {
+        // 1. Зчитування
+        let weight = Number(document.getElementById('weight').value);
+        let reps = Number(document.getElementById('reps').value);
+
+        if (weight === 0 || reps === 0) {
+            alert("Введіть дані!");
+            return;
+        }
+
+        // 2. Розрахунок 1ПМ
+        let oneRm = weight * (1 + reps / 30);
+        let finalRm = Math.round(oneRm); // Округляємо до цілого
+
+        // Вивід головної цифри
+        document.getElementById('result-value').innerText = finalRm + " кг";
+        document.getElementById('result-box').style.display = 'block';
+
+        // 3. Побудова діаграми (JS змінює CSS висоту)
+        // Вираховуємо відсотки від максимуму
+        let v95 = Math.round(finalRm * 0.95);
+        let v85 = Math.round(finalRm * 0.85);
+        let v75 = Math.round(finalRm * 0.75);
+        let v65 = Math.round(finalRm * 0.65);
+
+        // Отримуємо елементи стовпчиків
+        let b95 = document.getElementById('bar-95');
+        let b85 = document.getElementById('bar-85');
+        let b75 = document.getElementById('bar-75');
+        let b65 = document.getElementById('bar-65');
+
+        // Записуємо текст всередину стовпчиків
+        document.getElementById('val-95').innerText = v95;
+        document.getElementById('val-85').innerText = v85;
+        document.getElementById('val-75').innerText = v75;
+        document.getElementById('val-65').innerText = v65;
+
+        // АНІМАЦІЯ: Спочатку скидаємо висоту, потім задаємо нову
+        // (Щоб анімація спрацьовувала при кожному натисканні)
+        b95.style.height = '0%';
+        b85.style.height = '0%';
+        b75.style.height = '0%';
+        b65.style.height = '0%';
+
+        setTimeout(() => {
+            b95.style.height = '95%'; // Висота залежить від відсотка навантаження
+            b85.style.height = '85%';
+            b75.style.height = '75%';
+            b65.style.height = '65%';
+        }, 100); // Затримка 100мс, щоб браузер встиг отримати команду "0"
+    }
+</script>
+</body>
+</html>

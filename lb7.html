@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiohead - Creep</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+    <style>
+        /* --- ОСНОВНЫЕ СТИЛИ --- */
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- ФОНОВОЕ СВЕЧЕНИЕ --- */
+        @keyframes ambient {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.3; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+        }
+
+        .glow-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(220, 200, 50, 0.2) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(80px);
+            z-index: -1;
+            animation: ambient 10s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* --- ПЛЕЕР --- */
+        .player-wrapper {
+            display: flex;
+            gap: 40px;
+            width: 90%;
+            max-width: 900px;
+            background: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .left-column {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .cover-image {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        h1 { margin: 10px 0 5px; font-size: 26px; }
+        h2 { margin: 0 0 15px; font-size: 18px; color: #b3b3b3; font-weight: normal; }
+
+        /* Аудио элемент с контролами */
+        audio { width: 100%; margin-bottom: 20px; outline: none; }
+
+        /* --- СТИЛИ ВИЗУАЛИЗАТОРА --- */
+        #visualizer {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            order: -1;
+        }
+
+        /* --- СТИЛИ ДЛЯ АНИМИРОВАННОГО КОТА --- */
+
+        @keyframes jump-animation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px) scaleX(1.1); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes cat-walk {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(-250px, -20px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .dog-container {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 130px;
+            height: 130px;
+            z-index: 10;
+            pointer-events: all;
+            cursor: pointer;
+
+            /* Стили рамки */
+            background: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+
+            transform: translate(-20px, -20px);
+        }
+
+        .dog-container.walking {
+            animation: cat-walk 15s linear infinite alternate;
+        }
+
+        .dancing-cat {
+            width: 100px;
+            height: 100px;
+            background-image: url('https://img.freepik.com/premium-vector/doodle-cute-funny-cat-sitting-hand-drawn-with-contour-lines-white-background-pet_733359-34.jpg');
+
+            /* --- ГЛАВНОЕ ИЗМЕНЕНИЕ ДЛЯ ЧЕТКОСТИ --- */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center; /* Четкое центрирование изображения */
+            /* ------------------------------------- */
+
+            transform: translateY(0);
+            transition: background-image 0.1s ease-out, transform 0.1s ease-out;
+            display: block; /* Убедимся, что занимает всю область */
+        }
+
+        .dancing-cat.jumping {
+            animation: jump-animation 0.3s ease-out;
+        }
+
+        /* --- ИНФОБЛОК --- */
+        .info-box {
+            text-align: left;
+            width: 100%;
+            font-size: 14px;
+            color: #888;
+            background: rgba(37, 37, 37, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        ul { padding-left: 20px; margin: 0; }
+        li { margin-bottom: 5px; }
+
+        /* --- ТЕКСТ ПЕСНИ (С АНИМАЦИЕЙ СКАЛИРОВАНИЯ) --- */
+        .lyrics-column {
+            width: 60%;
+            height: 500px;
+            overflow-y: auto;
+            position: relative;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+
+            padding-right: 15px;
+            padding-left: 30px;
+            box-sizing: border-box;
+        }
+
+        .line {
+            font-size: 24px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.3);
+            margin: 20px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+            line-height: 1.4;
+            transform-origin: left center;
+        }
+
+        .line:hover { color: rgba(255, 255, 255, 0.6); }
+
+        .line.active {
+            color: #ffffff;
+            transform: scale(1.05);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Кастомный скроллбар */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+        @media (max-width: 700px) {
+            .player-wrapper { flex-direction: column; }
+            .left-column, .lyrics-column { width: 100%; }
+            .lyrics-column { height: 300px; padding-left: 10px; }
+            .glow-background { width: 300px; height: 300px; }
+            .dog-container { width: 110px; height: 110px; padding: 5px; transform: translate(-5px, -5px); }
+            .dancing-cat { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="glow-background"></div>
+
+<div class="player-wrapper">
+    <div class="left-column">
+        <canvas id="visualizer" width="300" height="100"></canvas>
+
+        <img src="https://sefon.pro/img/artist_photos/radiohead.jpg" alt="Album Art" class="cover-image" onerror="this.src='https://placehold.co/400x400/333/fff?text=Radiohead';">
+
+        <h1>Creep</h1>
+        <h2>Radiohead</h2>
+
+        <audio id="audio" controls>
+            <source src="creep.mp3" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+        </audio>
+
+        <div class="info-box">
+            <strong>Информация:</strong>
+            <ul>
+                <li>Альбом: Pablo Honey (1993)</li>
+                <li>Жанр: Alternative Rock</li>
+                <li>Лейбл: Parlophone</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="lyrics-column" id="lyrics">
+        <div class="line" data-time="0">... (Музыка) ...</div>
+        <div class="line" data-time="18">When you were here before</div>
+        <div class="line" data-time="23">Couldn't look you in the eye</div>
+        <div class="line" data-time="29">You're just like an angel</div>
+        <div class="line" data-time="34">Your skin makes me cry</div>
+        <div class="line" data-time="38">You float like a feather</div>
+        <div class="line" data-time="45">In a beautiful world</div>
+        <div class="line" data-time="50">I wish I was special</div>
+        <div class="line" data-time="55">You're so fuckin' special</div>
+        <div class="line" data-time="57">... (Музыка) ...</div>
+        <div class="line" data-time="59">But I'm a creep</div>
+        <div class="line" data-time="65">I'm a weirdo</div>
+        <div class="line" data-time="70">What the hell am I doin' here?</div>
+        <div class="line" data-time="74">I don't belong here</div>
+        <div class="line" data-time="78">I don't care if it hurts</div>
+        <div class="line" data-time="85">I wanna have control</div>
+        <div class="line" data-time="92">I want a perfect body</div>
+        <div class="line" data-time="95">I want a perfect soul</div>
+        <div class="line" data-time="105">I want you to notice</div>
+        <div class="line" data-time="110">When I'm not around</div>
+        <div class="line" data-time="116">You're so fuckin' special</div>
+        <div class="line" data-time="119">I wish I was special</div>
+        <div class="line" data-time="124">But I'm a creep...</div>
+        <div class="line" data-time="130">I'm a weirdo...</div>
+        <div class="line" data-time="139">What the hell am I doin' here?</div>
+        <div class="line" data-time="144">I don't belong here...</div>
+        <div class="line" data-time="148">Delux version...</div>
+    </div>
+
+    <div class="dog-container" id="cat-container">
+        <div class="dancing-cat" id="dancing-cat"></div>
+    </div>
+</div>
+
+<script>
+    const audio = document.getElementById('audio');
+    const lines = document.querySelectorAll('.line');
+    const cat = document.getElementById('dancing-cat');
+    const catContainer = document.getElementById('cat-container');
+
+    // URLы изображений кота
+    const sitUrl = 'https://img.freepik.com/premium-vector/doodle-cute-funny-cat-sitting-hand-drawn-with-contour-lines-white-background-pet_733359-34.jpg';
+    const jumpUrl = 'https://w7.pngwing.com/pngs/684/243/png-transparent-jumping-cat-action-yellow-cat.png';
+    const clickUrl = 'https://cdn-icons-png.flaticon.com/512/5598/5598954.png';
+
+    // --- ПЕРЕМЕННЫЕ ДЛЯ ВИЗУАЛИЗАТОРА ---
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    let audioCtx, analyser, source;
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const barWidth = 4;
+    let numBars = Math.floor(canvas.width / barWidth);
+    let bufferLength;
+
+    let isQStopActive = false;
+    let isClickAnimationActive = false;
+
+
+    // -----------------------------------------------------------
+    // --- ЛОГИКА WEB AUDIO API И ВИЗУАЛИЗАЦИИ ---
+    // -----------------------------------------------------------
+
+    function setupAudioContext() {
+        if (audioCtx) return;
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        source = audioCtx.createMediaElementSource(audio);
+
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        analyser.fftSize = 256;
+        bufferLength = analyser.frequencyBinCount;
+        numBars = Math.floor(canvas.width / barWidth);
+
+        draw();
+    }
+
+    function draw() {
+        requestAnimationFrame(draw);
+
+        let dataArray = new Uint8Array(bufferLength);
+        analyser.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let x = 0;
+        const activeColor = '#A0D468';
+        const bassColor = '#4FC1E9';
+
+        // --- АНАЛИЗ БАСА ДЛЯ КОТА (ПРЫЖОК) ---
+        if (cat && !isClickAnimationActive) {
+            const bassLevel = (dataArray[1] + dataArray[2] + dataArray[3]) / 3;
+            const jumpThreshold = 180;
+
+            if (bassLevel > jumpThreshold) {
+                cat.style.backgroundImage = `url('${jumpUrl}')`;
+                cat.classList.add('jumping');
+            } else {
+                cat.style.backgroundImage = `url('${sitUrl}')`;
+
+                if (cat.classList.contains('jumping')) {
+                    setTimeout(() => {
+                        cat.classList.remove('jumping');
+                    }, 50);
+                }
+            }
+        }
+        // ----------------------------------------
+
+        // Отрисовка визуализатора
+        for (let i = 0; i < numBars; i++) {
+            let dataIndex = Math.floor(i * (bufferLength / numBars));
+            let barHeight = dataArray[dataIndex] / 2.2;
+
+            ctx.fillStyle = i < numBars / 4 ? bassColor : activeColor;
+            ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+
+            x += barWidth;
+        }
+    }
+
+
+    // -----------------------------------------------------------
+    // --- ЛОГИКА КОНТРОЛЯ ХОДЬБЫ И КЛАВИШ ---
+    // -----------------------------------------------------------
+
+    function toggleCatWalking() {
+        if (!audio.paused && !isQStopActive) {
+            catContainer.classList.add('walking');
+        } else {
+            catContainer.classList.remove('walking');
+        }
+    }
+
+    // --- ЛОГИКА: КЛИК ПО КОТУ ---
+    catContainer.addEventListener('mousedown', (event) => {
+        if (event.button === 0) {
+            event.preventDefault();
+
+            // Проверяем, не активна ли уже анимация клика
+            if (isClickAnimationActive) return;
+
+            // Сохраняем текущее изображение (сидящее/прыгающее), которое должно быть установлено draw()
+            const originalUrl = cat.style.backgroundImage;
+
+            isClickAnimationActive = true;
+            cat.style.backgroundImage = `url('${clickUrl}')`;
+            cat.classList.remove('jumping');
+
+            setTimeout(() => {
+                cat.style.backgroundImage = originalUrl;
+                isClickAnimationActive = false;
+            }, 1000);
+        }
+    });
+
+
+    // --- ОБРАБОТЧИК КЛАВИАТУРЫ ---
+    document.addEventListener('keydown', (event) => {
+        // 1. Управление котом (Q)
+        if (event.key === 'q' || event.key === 'Q') {
+            event.preventDefault();
+            isQStopActive = !isQStopActive;
+            toggleCatWalking();
+        }
+
+        // 2. Управление музыкой (Spacebar)
+        if (event.code === 'Space') {
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'BUTTON' || document.activeElement.tagName === 'AUDIO') return;
+
+            event.preventDefault();
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+            toggleCatWalking();
+        }
+    });
+
+
+    // --- ОСНОВНЫЕ ОБРАБОТЧИКИ АУДИО ---
+    audio.addEventListener('play', () => {
+        setupAudioContext();
+        toggleCatWalking();
+    });
+
+    audio.addEventListener('pause', toggleCatWalking);
+    audio.addEventListener('ended', toggleCatWalking);
+
+
+    // --- ЛОГИКА СИНХРОНИЗАЦИИ ТЕКСТА ---
+    audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+
+        lines.forEach((line, index) => {
+            const time = parseFloat(line.getAttribute('data-time'));
+            const nextTime = lines[index + 1] ? parseFloat(lines[index + 1].getAttribute('data-time')) : Infinity;
+
+            if (currentTime >= time && currentTime < nextTime) {
+                const activeLine = document.querySelector('.line.active');
+                if (activeLine !== line) {
+                    activeLine?.classList.remove('active');
+                    line.classList.add('active');
+                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    });
+
+    lines.forEach(line => {
+        line.addEventListener('click', () => {
+            setupAudioContext();
+            audio.currentTime = parseFloat(line.getAttribute('data-time'));
+            audio.play();
+        });
+    });
+</script>
+</body>
+</html>

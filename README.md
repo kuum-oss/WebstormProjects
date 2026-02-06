@@ -2,8 +2,6 @@
 
 A stylish, interactive web audio player with synchronized lyrics and real-time audio visualization.
 
-![Demo](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXZueXpueXpueXpueXpueXpueXpueXpueXpueXpueXpueSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKMGpxxS1ucHhT2/giphy.gif)
-
 ### ✨ Features
 * **Synced Lyrics:** Lines highlight and auto-scroll as the music plays.
 * **Audio Visualizer:** Dynamic canvas-based bars reacting to frequencies.
